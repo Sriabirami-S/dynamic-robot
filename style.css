@@ -1015,3 +1015,353 @@ nav::after{
         0 20px 45px rgba(77,111,255,.35);
 
 }
+
+#toast{
+
+    position:fixed;
+
+    top:90px;
+
+    right:30px;
+
+    background:#4d6fff;
+
+    color:#ffffff;
+
+    padding:14px 20px;
+
+    border-radius:14px;
+
+    font-size:14px;
+
+    font-weight:500;
+
+    line-height:1.5;
+
+    max-width:280px;
+
+    opacity:0;
+
+    transform:translateY(-20px);
+
+    pointer-events:none;
+
+    transition:.35s;
+
+    z-index:99999;
+
+    box-shadow:0 12px 30px rgba(0,0,0,.18);
+
+}
+
+#toast.show{
+
+    opacity:1;
+
+    transform:translateY(0);
+
+}
+
+
+/* red rectangle for interaction zone */
+/* #interactionBox{
+
+    position: fixed;
+
+    border: 3px solid red;
+
+    background: rgba(255,0,0,0.08);
+
+    pointer-events: none;
+
+    z-index: 9999;
+
+    box-sizing: border-box;
+
+} */
+
+/* ==========================================
+           RESPONSIVE DESIGN
+========================================== */
+
+@media (max-width: 992px){
+
+    nav{
+
+        width:95%;
+
+        padding:0 25px;
+
+        height:70px;
+
+    }
+
+    .logo{
+
+        font-size:28px;
+
+    }
+
+    nav ul{
+
+        gap:25px;
+
+    }
+
+    .contactBtn{
+
+        padding:14px 28px;
+
+        font-size:15px;
+
+    }
+
+    .hero{
+
+        padding:140px 40px 80px;
+
+    }
+
+    .left{
+
+        width:100%;
+
+        max-width:500px;
+
+    }
+
+    .left h1{
+
+        font-size:62px;
+
+        line-height:68px;
+
+    }
+
+    .description{
+
+        font-size:20px;
+
+        line-height:34px;
+
+    }
+
+    #controlPanel{
+
+        left:20px;
+
+        width:240px;
+
+    }
+
+    .featureGrid{
+
+        grid-template-columns:repeat(2,1fr);
+
+    }
+
+}
+
+@media (max-width:768px){
+
+    nav{
+
+        height:auto;
+
+        padding:18px 20px;
+
+        flex-direction:column;
+
+        gap:15px;
+
+    }
+
+    .logo{
+
+        font-size:26px;
+
+    }
+
+    nav ul{
+
+        gap:18px;
+
+        flex-wrap:wrap;
+
+        justify-content:center;
+
+    }
+
+    nav ul li a{
+
+        font-size:15px;
+
+    }
+
+    .contactBtn{
+
+        display:none;
+
+    }
+
+    .hero{
+
+        justify-content:center;
+
+        text-align:center;
+
+        padding:170px 25px 80px;
+
+    }
+
+    .left{
+
+        max-width:100%;
+
+    }
+
+    .smallTitle{
+
+        font-size:14px;
+
+        letter-spacing:3px;
+
+    }
+
+    .left h1{
+
+        font-size:48px;
+
+        line-height:54px;
+
+    }
+
+    .description{
+
+        font-size:18px;
+
+        line-height:30px;
+
+    }
+
+    .exploreBtn{
+
+        padding:16px 34px;
+
+        font-size:17px;
+
+    }
+
+    #controlPanel{
+
+        width:90%;
+
+        left:5%;
+
+        top:120px;
+
+        max-height:350px;
+
+    }
+
+    #about,
+
+    #features,
+
+    #contact{
+
+        padding:80px 25px;
+
+    }
+
+    .aboutCard{
+
+        padding:35px 25px;
+
+    }
+
+    .aboutContainer h2,
+
+    .featuresContainer h2,
+
+    .contactContainer h2{
+
+        font-size:36px;
+
+    }
+
+    .featureGrid{
+
+        grid-template-columns:1fr;
+
+        gap:25px;
+
+    }
+
+    .contactIcons{
+
+        flex-wrap:wrap;
+
+        gap:20px;
+
+    }
+
+    #toast{
+
+        top:120px;
+
+        right:15px;
+
+        left:15px;
+
+        max-width:none;
+
+    }
+
+}
+
+@media (max-width:480px){
+
+    .left h1{
+
+        font-size:38px;
+
+        line-height:44px;
+
+    }
+
+    .description{
+
+        font-size:16px;
+
+        line-height:28px;
+
+    }
+
+    .aboutContainer h2,
+
+    .featuresContainer h2,
+
+    .contactContainer h2{
+
+        font-size:30px;
+
+    }
+
+    .aboutSubtitle,
+
+    .featuresSubtitle,
+
+    .contactSubtitle{
+
+        font-size:17px;
+
+    }
+
+    .featureCard{
+
+        padding:28px 22px;
+
+    }
+
+}

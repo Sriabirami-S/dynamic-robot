@@ -199,7 +199,7 @@ scene.add(floor);
 // ======================================
 
 const shadowTexture = new THREE.TextureLoader().load(
-    "https://threejs.org/examples/textures/sprites/roundshadow.png"
+    import.meta.env.BASE_URL + "textures/roundshadow.png"
 );
 
 const shadowMaterial = new THREE.MeshBasicMaterial({
@@ -208,7 +208,7 @@ const shadowMaterial = new THREE.MeshBasicMaterial({
 
     transparent: true,
 
-    opacity: 0.35,
+    opacity: 0.28,
 
     depthWrite: false
 
@@ -216,7 +216,7 @@ const shadowMaterial = new THREE.MeshBasicMaterial({
 
 const contactShadow = new THREE.Mesh(
 
-    new THREE.PlaneGeometry(3.2,3.2),
+    new THREE.PlaneGeometry(5.2,4.2),
 
     shadowMaterial
 
@@ -226,7 +226,7 @@ contactShadow.rotation.x = -Math.PI / 2;
 
 contactShadow.position.set(
     4.8,
-    -1.34,
+    -1.348,
     0
 );
 
@@ -269,7 +269,7 @@ let actions = {};
 
 loader.load(
 
-    "/models/go1.glb",
+       import.meta.env.BASE_URL + "models/go1.glb",
 
     (gltf)=>{
 
@@ -389,7 +389,7 @@ groups.forEach(group => {
         // ==========================
 
         robot.scale.set(
-           7,7,7
+           8,8,8
         );
 
        robot.position.set(
@@ -423,22 +423,63 @@ groups.forEach(group => {
 let mouseX = 0;
 let mouseY = 0;
 
+let rotationLocked = false;
+let waitForMouseMove = false;
+
+let lockedRotation = 0;
 let mouseInsideZone = false;
 
+// Toast / onboarding
+let introToastShown = false;
+let lockHintShown = false;
+
+let introTimer = null;
+let lockTimer = null;
+
 window.addEventListener("mousemove", (e) => {
+
+    if(waitForMouseMove){
+
+        waitForMouseMove = false;
+
+        return;
+
+    }
 
     const left = window.innerWidth * 0.53;
     const right = window.innerWidth * 0.70;
 
     const top = window.innerHeight * 0.30;
     const bottom = window.innerHeight * 0.68;
-drawInteractionBox(left, right, top, bottom);
+
+    drawInteractionBox(left, right, top, bottom);
+
     const box = document.getElementById("interactionBox");
 
-box.style.left = left + "px";
-box.style.top = top + "px";
-box.style.width = (right - left) + "px";
-box.style.height = (bottom - top) + "px";
+    box.style.left = left + "px";
+    box.style.top = top + "px";
+    box.style.width = (right - left) + "px";
+    box.style.height = (bottom - top) + "px";
+
+    // -------------------------
+    // FIRST TIP
+    // -------------------------
+
+    if(!introToastShown){
+
+        introToastShown = true;
+
+        introTimer = setTimeout(()=>{
+
+            showToast(
+                "Move your cursor over the robot to rotate it.",
+                5000
+            );
+
+        },1000);
+
+    }
+
     if (
         e.clientX >= left &&
         e.clientX <= right &&
@@ -446,7 +487,26 @@ box.style.height = (bottom - top) + "px";
         e.clientY <= bottom
     ) {
 
-        mouseInsideZone = true;
+        if(!mouseInsideZone){
+
+            mouseInsideZone = true;
+
+            if(!lockHintShown){
+
+                lockTimer = setTimeout(()=>{
+
+                    showToast(
+                        "Click to lock the current view.",
+                        4500
+                    );
+
+                    lockHintShown = true;
+
+                },3200);
+
+            }
+
+        }
 
         mouseX =
             ((e.clientX - left) / (right - left)) * 2 - 1;
@@ -455,18 +515,102 @@ box.style.height = (bottom - top) + "px";
             -(((e.clientY - top) / (bottom - top)) * 2 - 1);
 
     }
-    else {
+    else{
 
         mouseInsideZone = false;
+
+        clearTimeout(lockTimer);
+
+    }
+
+}
+);
+window.addEventListener("click", (e) => {
+
+    const left = window.innerWidth * 0.53;
+    const right = window.innerWidth * 0.70;
+
+    const top = window.innerHeight * 0.30;
+    const bottom = window.innerHeight * 0.68;
+
+    if (
+        e.clientX >= left &&
+        e.clientX <= right &&
+        e.clientY >= top &&
+        e.clientY <= bottom
+    ) {
+
+        rotationLocked = !rotationLocked;
+
+if(rotationLocked){
+
+    lockedRotation = robot.rotation.y;
+
+    showToast("View Locked<br><small>Click again to unlock</small>",2500);
+
+}
+else{
+
+    waitForMouseMove = true;
+
+showToast("View Unlocked",1500);
+}
+
+        if (rotationLocked && robot) {
+
+            lockedRotation = robot.rotation.y;
+
+            console.log("Rotation Locked");
+
+        }
+        else{
+
+            console.log("Rotation Unlocked");
+
+        }
 
     }
 
 });
-
 /* ======================================================
    ANIMATION
 ====================================================== */
+function shortestAngleDifference(current, target) {
 
+    let difference = target - current;
+
+    while (difference > Math.PI) {
+
+        difference -= Math.PI * 2;
+
+    }
+
+    while (difference < -Math.PI) {
+
+        difference += Math.PI * 2;
+
+    }
+
+    return difference;
+
+}
+function showToast(message, duration = 2500){
+
+    const toast = document.getElementById("toast");
+
+    toast.innerHTML = message;
+
+    toast.classList.add("show");
+
+    clearTimeout(showToast.timer);
+
+    showToast.timer = setTimeout(()=>{
+
+        toast.classList.remove("show");
+
+    }, duration);
+
+}
 function animate(){
 
     requestAnimationFrame(animate);
@@ -477,12 +621,28 @@ function animate(){
       const defaultRotation = -1.3;
 
 // Only update rotation while the mouse is inside the interaction zone
-if (mouseInsideZone) {
+if (!rotationLocked &&
+    !waitForMouseMove &&
+    mouseInsideZone) {
 
-    const targetRotation = defaultRotation + mouseX * (Math.PI*2);
+    const targetRotation = defaultRotation + mouseX * (Math.PI * 2);
 
-    robot.rotation.y +=
-        (targetRotation - robot.rotation.y) * 0.15;
+    const delta = shortestAngleDifference(
+        robot.rotation.y,
+        targetRotation
+    );
+
+    robot.rotation.y += delta * 0.10;
+
+}
+else if (rotationLocked) {
+
+    const delta = shortestAngleDifference(
+        robot.rotation.y,
+        lockedRotation
+    );
+
+    robot.rotation.y += delta * 0.15;
 
 }
 
@@ -493,14 +653,14 @@ robot.rotation.x +=
 
         // Gentle breathing motion
        robot.position.y =
-    -1.22 +
+    -1.24 +
     Math.sin(Date.now()*0.0015)*0.03;
             contactShadow.position.x = robot.position.x;
 
 contactShadow.position.z = robot.position.z;
 
 contactShadow.material.opacity =
-0.35 - Math.abs(robot.position.y + 1.35) * 2.5;
+0.55 - Math.abs(robot.position.y + 1.22) * 1.2;
 
     }
 
